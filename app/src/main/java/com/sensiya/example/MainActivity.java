@@ -17,7 +17,7 @@ import android.widget.Toast;
 import com.sensiya.brainssdk.api.BrainsAPI;
 import com.sensiya.brainssdk.api.BrainsAPICallback;
 import com.sensiya.brainssdk.api.BrainsIntent;
-import com.sensiya.brainssdk.api.User;
+import com.sensiya.brainssdk.api.UserData;
 
 import java.util.Locale;
 
@@ -54,7 +54,7 @@ public class MainActivity extends Activity {
       }
 
       @Override
-      public void onUserDataReady(final User user) {
+      public void onUserDataReady(final UserData user) {
         Log.d(TAG, "User data ready");
         runOnUiThread(new Runnable() {
           @Override
@@ -83,12 +83,12 @@ public class MainActivity extends Activity {
     unregisterReceiver(mLocalBrainsReceiver);
   }
 
-  private void populateGeneralInfo(User userInfo){
+  private void populateGeneralInfo(UserData userData){
 
     StringBuilder infoText = new StringBuilder();
-    infoText.append(String.format("Gender: %s Confidence: %.2f \r\n", User.getGenderString(userInfo.getGender()), userInfo.getGenderConfidence()));
-    infoText.append(String.format("Age range: %s Confidence: %.2f \r\n", userInfo.getAgeRange(), userInfo.getAgeRangeConfidence()));
-    infoText.append(String.format("Estimated age: %s \r\n", userInfo.getEstimatedAge()));
+    infoText.append(String.format("Gender: %s Confidence: %.2f \r\n", userData.getGenderString(userData.getGender()), userData.getGenderConfidence()));
+    infoText.append(String.format("Age range: %s Confidence: %.2f \r\n", userData.getAgeRange(), userData.getAgeRangeConfidence()));
+    infoText.append(String.format("Estimated age: %s \r\n", userData.getEstimatedAge()));
 
     TextView generalInfoTV = (TextView) findViewById(R.id.txt_general_info);
     generalInfoTV.setText(infoText.toString());
@@ -96,12 +96,12 @@ public class MainActivity extends Activity {
 
   private void checkHomeAndWorkLocation(){
     Button showHomeButton = (Button) findViewById(R.id.btn_home_location);
-    Location homeLocation = BrainsAPI.getHomeLocation();
+    Location homeLocation = BrainsAPI.LocationServices.getHomeLocation();
     boolean hasHomeLocation = !(homeLocation == null);
     showHomeButton.setEnabled(hasHomeLocation);
 
     Button showWorkButton = (Button) findViewById(R.id.btn_work_location);
-    Location workLocation = BrainsAPI.getWorkLocation();
+    Location workLocation = BrainsAPI.LocationServices.getWorkLocation();
     boolean hasWorkLocation = !(workLocation == null);
     showWorkButton.setEnabled(hasWorkLocation);
 
@@ -111,11 +111,11 @@ public class MainActivity extends Activity {
   }
 
   public void showHomeLocation(View view) {
-    showLocation(BrainsAPI.getHomeLocation());
+    showLocation(BrainsAPI.LocationServices.getHomeLocation());
   }
 
   public void showWorkLocation(View view) {
-    showLocation(BrainsAPI.getWorkLocation());
+    showLocation(BrainsAPI.LocationServices.getWorkLocation());
   }
 
   private void showLocation(Location locationData){
@@ -152,9 +152,10 @@ public class MainActivity extends Activity {
     }
 
     private void handleUserActivityIntent(Intent intent){
-      int activityType = BrainsAPI.ActivityRecognition.getActivityType(intent);
-      int activityConfidence = BrainsAPI.ActivityRecognition.getActivityConfidence(intent);
-      String activityTypeString = BrainsAPI.ActivityRecognition.getActivityString(activityType);
+
+      int activityType = intent.getIntExtra(BrainsIntent.EXTRA_ACTIVITY_TYPE, BrainsIntent.ACTIVITY_UNKNOWN);
+      int activityConfidence = intent.getIntExtra(BrainsIntent.EXTRA_ACTIVITY_CONFIDENCE, 0);
+      String activityTypeString = getActivityString(activityType);
 
       mBrainsIntentTextView.setText(String.format("User activity changed. \r\n %s (%3d%%)", activityTypeString, activityConfidence));
     }
@@ -166,6 +167,31 @@ public class MainActivity extends Activity {
       }
 
       return "unknown action";
+    }
+
+    private String getActivityString(int activityType){
+      switch (activityType){
+        case BrainsIntent.ACTIVITY_STILL:
+          return "Still";
+
+        case BrainsIntent.ACTIVITY_WALKING:
+          return "Walking";
+
+        case BrainsIntent.ACTIVITY_RUNNING:
+          return "Running";
+
+        case BrainsIntent.ACTIVITY_JUMPING:
+          return "Jumping";
+
+        case BrainsIntent.ACTIVITY_CYCLING:
+          return "Cycling";
+
+        case BrainsIntent.ACTIVITY_DRIVING:
+          return "Driving";
+
+        default:
+          return "Unknown";
+      }
     }
   }
 }

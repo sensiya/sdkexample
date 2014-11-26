@@ -20,7 +20,6 @@ public class LocalBrainsReceiver extends BroadcastReceiver {
 
   @Override
   public void onReceive(Context context, Intent intent) {
-
     Message message = new Message();
     message.obj = intent;
     mHandler.sendMessage(message);

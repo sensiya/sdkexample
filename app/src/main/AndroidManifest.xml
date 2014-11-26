@@ -46,6 +46,8 @@
         <receiver android:name="com.sensiya.brainssdk.BrainsBroadcastReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.net.wifi.STATE_CHANGE"/>
+                <action android:name="android.location.PROVIDERS_CHANGED"/>
             </intent-filter>
         </receiver>
 
@@ -61,7 +63,6 @@
                 <action android:name="brainssdk.intent.action.WENT_TO_SLEEP"/>
                 <action android:name="brainssdk.intent.action.WOKE_UP"/>
                 <action android:name="brainssdk.intent.action.GEO_FENCE"/>
-                <action android:name="brainssdk.intent.action.SUDDEN_LIGHTS_OFF"/>
                 <action android:name="brainssdk.intent.action.USER_ACTIVITY_CHANGED"/>
                 <action android:name="brainssdk.intent.action.USER_BROWSING"/>
             </intent-filter>
