@@ -48,6 +48,7 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
                 <action android:name="android.net.wifi.STATE_CHANGE"/>
                 <action android:name="android.location.PROVIDERS_CHANGED"/>
+                <action android:name="com.brainssdk.action.BRAINS"/>
             </intent-filter>
         </receiver>
 
